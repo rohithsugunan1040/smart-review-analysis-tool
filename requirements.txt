@@ -1,0 +1,7 @@
+streamlit
+beautifulsoup4
+pandas
+matplotlib
+nltk
+vaderSentiment
+requests
