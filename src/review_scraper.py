@@ -69,6 +69,7 @@ def fetch_reviews(link):
     # reviews.append("It's a decent product, nothing extraordinary")  # Neutral review
     # reviews.append("The performance is satisfactory, neither impressive nor disappointing")  # Neutral review
     return reviews
+    
 
 
 
