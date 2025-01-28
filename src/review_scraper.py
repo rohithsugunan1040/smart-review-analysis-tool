@@ -53,19 +53,11 @@ def fetch_reviews(link):
                 if read_more.is_displayed():
                     read_more.click()
                 review = div.find_element(By.XPATH,'.//div').text
-                # print(div.find_element(By.XPATH,'.//div').text)
                 reviews.append(review)
             page_count += 1
             driver.get(anchor_link+"&page="+str(page_count))
     except NoSuchElementException:
         print("ELEMENT NOT FOUND")
-    # reviews.append("This watch is very bad")
-    # reviews.append("The competitor product is more good than this")
-    # reviews.append("This watch is good but could be better in handling connections")
-    # reviews.append("The watch is okay, not too bad but not too good either")  # Neutral review
-    # reviews.append("The product is average, it meets expectations but doesn't exceed them")  # Neutral review
-    # reviews.append("It's a decent product, nothing extraordinary")  # Neutral review
-    # reviews.append("The performance is satisfactory, neither impressive nor disappointing")  # Neutral review
     return reviews
     
 
