@@ -1,15 +1,19 @@
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+# Download the VADER lexicon
+nltk.download('vader_lexicon')
 
 def analyze_sentiment(reviews):
-    analyzer = SentimentIntensityAnalyzer()
+    sia = SentimentIntensityAnalyzer()
     sentiments = {'positive': 0, 'neutral': 0, 'negative': 0}
     
     for review in reviews:
-        score = analyzer.polarity_scores(review)
-        print(f"Review: {review}\nScore: {score}\n")  # Debugging: Print the review and its sentiment score
-        if score['compound'] >= 0.05:
+        result = sia.polarity_scores(review)
+        print(f"Review: {review}\nResult: {result}\n")  # Debugging: Print the review and its sentiment result
+        if result['compound'] >= 0.05:
             sentiments['positive'] += 1
-        elif score['compound'] <= -0.05:
+        elif result['compound'] <= -0.05:
             sentiments['negative'] += 1
         else:
             sentiments['neutral'] += 1
