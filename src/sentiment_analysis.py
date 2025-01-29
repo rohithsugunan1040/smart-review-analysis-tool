@@ -10,7 +10,8 @@ def analyze_sentiment(reviews):
     
     for review in reviews:
         result = sia.polarity_scores(review)
-        print(f"Review: {review}\nResult: {result}\n")  # Debugging: Print the review and its sentiment result
+        # Debugging: Print the review and its sentiment result
+        # print(f"Review: {review}\nResult: {result}\n")
         if result['compound'] >= 0.05:
             sentiments['positive'] += 1
         elif result['compound'] <= -0.05:
