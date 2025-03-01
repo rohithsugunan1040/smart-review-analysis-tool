@@ -9,3 +9,7 @@ selenium
 scikit-learn
 numpy
 scipy
+webdriver-manager 
+torch
+transformers
+rake-nltk 
