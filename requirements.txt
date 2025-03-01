@@ -3,5 +3,9 @@ beautifulsoup4
 pandas
 matplotlib
 nltk
-vaderSentiment
 requests
+plotly
+selenium
+scikit-learn
+numpy
+scipy

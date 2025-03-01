@@ -1,4 +1,5 @@
 import streamlit as st
+from src.review_summarizer import summarize_reviews
 from src.review_scraper import fetch_reviews
 from src.data_processing import clean_reviews
 from src.sentiment_analysis import analyze_sentiment
@@ -20,6 +21,7 @@ def main():
         
         with st.spinner("Cleaning reviews..."):
             cleaned_reviews = clean_reviews(reviews)
+            
         
         with st.spinner("Analyzing sentiment..."):
             sentiments = analyze_sentiment(cleaned_reviews)
@@ -29,6 +31,7 @@ def main():
         st.subheader("Sentiment Analysis Results")
         create_pie_chart(sentiments)
         create_bar_chart(cleaned_reviews)
+        st.text(summarize_reviews(cleaned_reviews))
 
 if __name__ == "__main__":
     main()
