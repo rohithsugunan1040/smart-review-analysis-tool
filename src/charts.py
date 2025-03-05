@@ -14,7 +14,6 @@ try:
 except LookupError:
     print("Downloading stopword resource")
     nltk.download('stopwords')
-
 nltk.download('punkt')
 # Find NLTK data paths
 nltk_data_paths = nltk.data.path
