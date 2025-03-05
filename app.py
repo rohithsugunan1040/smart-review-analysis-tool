@@ -2,7 +2,12 @@ import streamlit as st
 from src.review_summarizer import summarize_reviews
 from src.review_scraper import fetch_reviews
 from src.data_processing import clean_reviews
-from src.sentiment_analysis import analyze_sentiment
+# from src.sentiment_analysis import analyze_sentiment
+# temp change
+
+from src.sentiment_analysis_legacy import analyze_sentiment
+
+# temp change end
 from src.charts import create_pie_chart
 from src.charts import create_bar_chart
 
