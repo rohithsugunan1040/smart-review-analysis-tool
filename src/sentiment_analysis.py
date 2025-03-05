@@ -8,7 +8,6 @@ model = BertForSequenceClassification.from_pretrained('nlptown/bert-base-multili
 
 def analyze_sentiment(reviews):
     sentiments = {'positive': 0, 'neutral': 0, 'negative': 0}
-    
     for review in reviews:
         inputs = tokenizer(review, return_tensors='pt', truncation=True, padding=True, max_length=512)
         outputs = model(**inputs)
@@ -44,3 +43,4 @@ def analyze_sentiment(reviews):
 #             sentiments['neutral'] += 1
     
 #     return sentiments
+
