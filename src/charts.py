@@ -76,9 +76,12 @@ def create_bar_chart(cleaned_reviews):
         'count' : counts
     })
 
-    fig = px.bar(df,x='keyword',y='count',labels={
-        'keyword':'keywords','count':'keyword count'
-    },title='Most occured Keywords')
+    print(df)
 
-    st.plotly_chart(fig)
+    if not df.empty:
+        fig = px.bar(df,x='keyword',y='count',labels={
+            'keyword':'keywords','count':'keyword count'
+        },title='Most occured Keywords')
+
+        st.plotly_chart(fig)
 

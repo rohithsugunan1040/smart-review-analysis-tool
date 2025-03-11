@@ -20,6 +20,9 @@ def summarize_reviews(reviews):
     prompt = f"Summarize the following customer reviews into a short, clear summary:\n\n{reviews}"
     response = model.generate_content(prompt)
 
+    prompt = f"Give some sugessions to improve the quality of product based on the review:\n\n{reviews}"
+    print(model.generate_content(prompt).text)
+
     # Get the summarized text
     summary = response.text
     return summary
