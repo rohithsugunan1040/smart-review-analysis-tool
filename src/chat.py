@@ -1,9 +1,14 @@
 import google.generativeai as genai
-from .. creds import api_key as key
+import os
+import sys
 
-# genai.configure(api_key="AIzaSyA8PFDBQxqRVGhpAyYQs11dC9YT4STV7Z0")
-genai.configure(api_key=key)
-model = genai.GenerativeModel('gemini-1.5-pro-latest')
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
+
+import creds
+
+genai.configure(api_key=creds.api_key)
+# model = genai.GenerativeModel('gemini-1.5-pro-latest')
 model = genai.GenerativeModel('gemini-2.0-flash-lite')
 
 def get_response(query,review):

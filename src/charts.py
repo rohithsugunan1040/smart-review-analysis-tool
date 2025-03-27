@@ -67,8 +67,6 @@ def keyword_analysis(review):
         st.session_state.response = response
         st.session_state.new_link = False
 
-    # pattern = r"\*\*\s*Keyword:\s*(.+?)\s*\*\*[\s\S]*?Positivity Percentage:\s*(?:Approximately\s*)?(\d+)%"
-    # pattern = r"[Kk]eyword[:]*\s*(.*?)\s*(?:\n|\r|\*)[\s\S]*?[Pp]ositivity(?: Percentage)*[:]*\s*(?:Approximately\s*)*(\d+)%"
     # pattern = r"\*\*Keyword:\*\*\s*(.*?)\n\*\*Positivity:\*\*\s*(\d+)%"
     # pattern = r"[kk]eyword-string:\s*(.*?)\s*\n\s*[pP]ossitivity:\s*(\d+)%"
     pattern = r"KW:\s*(.+?)\s*\n\s*possitivity:\s*(\d+)%?"

@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 from src.review_summarizer import summarize_reviews
 from src.review_scraper import fetch_reviews
@@ -42,9 +40,6 @@ def chat_sidebar():
         bot_response = f"{get_response(user_input,st.session_state.cleaned_reviews)}"
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
         st.session_state.enter_clicked = True
-
-
-
 
     with st.sidebar:
         st.header("💬 Chat")
