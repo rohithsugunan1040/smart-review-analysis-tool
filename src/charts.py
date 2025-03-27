@@ -5,8 +5,12 @@ import plotly.express as px
 import nltk
 from rake_nltk import Rake
 import os
+import re
 
 from collections import Counter
+
+
+from  pages.Chat import model
 
 try:
     nltk.data.find('corpora/stopwords')
@@ -52,36 +56,37 @@ def create_pie_chart(sentiments):
     
     st.pyplot(fig1)
 
+st.cache_resource
+def keyword_analysis(review):
+    if "response" not in st.session_state or st.session_state.new_link:
+        # prompt = f"{review}\n\nBased on the above review give the most frequently mentioned keywords which are useful for analysis of product along with their sentiment possitivity precent eg: 55% possitive\nkeyword examples are 'Camera quality','Battery Life' etc not include common keywords like 'good','bad','nice' etc. Keyword should be meaningful.\n\nGive each keyword as 'Keyword-string:' followed by the extracted keyword and in next line 'possitivity:' followed by corresponding positivity percentage."
+        prompt = f"{review}\n\nBased on the above review give the most frequently mentioned keywords which are useful for analysis of product along with their sentiment possitivity precent eg: 55% possitive\nkeyword examples are 'Camera quality','Battery Life' etc not include common keywords like 'good','bad','nice' etc. Keyword should be meaningful.\n\nGive each keyword as 'KW:' followed by the extracted keyword and in next line 'possitivity:' followed by corresponding positivity percentage. without any formatting or decoration"
+        response = model.generate_content(prompt)
+        response =  response.text
+        print("RESPONSE\n\n",response)
+        st.session_state.response = response
+        st.session_state.new_link = False
 
-def create_bar_chart(cleaned_reviews):
-    r = Rake(min_length=2, max_length=3)
-    all_keywords = []
-    for review in cleaned_reviews:
-        r.extract_keywords_from_text(review)
-        all_keywords.extend(r.get_ranked_phrases())
-    
-    keyword_counts = Counter(all_keywords)
+    # pattern = r"\*\*\s*Keyword:\s*(.+?)\s*\*\*[\s\S]*?Positivity Percentage:\s*(?:Approximately\s*)?(\d+)%"
+    # pattern = r"[Kk]eyword[:]*\s*(.*?)\s*(?:\n|\r|\*)[\s\S]*?[Pp]ositivity(?: Percentage)*[:]*\s*(?:Approximately\s*)*(\d+)%"
+    # pattern = r"\*\*Keyword:\*\*\s*(.*?)\n\*\*Positivity:\*\*\s*(\d+)%"
+    # pattern = r"[kk]eyword-string:\s*(.*?)\s*\n\s*[pP]ossitivity:\s*(\d+)%"
+    pattern = r"KW:\s*(.+?)\s*\n\s*possitivity:\s*(\d+)%?"
 
+    # Find all matches
+    matches = re.findall(pattern, st.session_state.response)
+    sentiments = {match[0]: int(match[1]) for match in matches}
 
-    keywords = []
-    counts = []
-    for keyword,count in keyword_counts.items():
-        if count > 4:
-            keywords.append(keyword)
-            counts.append(count)
+    keywords = list(sentiments.keys())
+    print("KEYWORDS\n\n",keywords)
 
+    # Display keywords as inline tags
+    keyword_html = "".join([f"<span style='display: inline-block; background-color: #e8eaed; padding: 6px 12px; border-radius: 12px; margin: 4px; font-size: 14px;'>{keyword}</span>" for keyword in keywords])
+    st.markdown(f"<div style='display: flex; flex-wrap: wrap; color:black'>{keyword_html}</div>", unsafe_allow_html=True)
 
-    df = pd.DataFrame({
-        'keyword' : keywords,
-        'count' : counts
-    })
+    st.markdown("---")
 
-    print(df)
-
-    if not df.empty:
-        fig = px.bar(df,x='keyword',y='count',labels={
-            'keyword':'keywords','count':'keyword count'
-        },title='Most occured Keywords')
-
-        st.plotly_chart(fig)
-
+    # Display sentiment bars
+    for feature, score in sentiments.items():
+        st.write(f"**{feature}**  {score}% positive")
+        st.progress(score / 100)

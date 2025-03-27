@@ -11,11 +11,10 @@ from src.sentiment_analysis_legacy import analyze_sentiment
 
 # temp change end
 from src.charts import create_pie_chart
-from src.charts import create_bar_chart
+from src.charts import keyword_analysis
 from src.chat import get_response
 
 import re
-
 
 
 def chat_sidebar():
@@ -128,7 +127,6 @@ def chat_sidebar():
             st.rerun()
 
 
-
 def main():
     st.title("Smart Review Analysis Tool")
 
@@ -142,6 +140,7 @@ def main():
         st.session_state.show_chat = False  # To handle chat visibility
 
     if st.button("Analyze Reviews"):
+        st.session_state.new_link = True
         with st.spinner("Fetching reviews..."):
             reviews = fetch_reviews(product_link)
             if reviews == 0:
@@ -164,16 +163,17 @@ def main():
     if st.session_state.reviews:
         st.subheader("Sentiment Analysis Results")
         create_pie_chart(st.session_state.sentiments)
-        create_bar_chart(st.session_state.cleaned_reviews)
-
+        st.text("")
+        st.subheader("Common keywords")
+       
+        keyword_analysis(st.session_state.reviews)
+        st.text("")
+        st.subheader("Review Summary")
+        st.text("")
         st.write(st.session_state.summary)
 
         if "show_chat" not in st.session_state:
             st.session_state.show_chat = False
-
-        if st.button("Open Chat"):
-            st.session_state.show_chat = not st.session_state.show_chat
-            st.rerun()
 
         if st.session_state.show_chat:
             chat_sidebar()

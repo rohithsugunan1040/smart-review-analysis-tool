@@ -2,10 +2,10 @@
 import google.generativeai as genai
 
 # Set your Gemini API key
-genai.configure(api_key="AIzaSyA8PFDBQxqRVGhpAyYQs11dC9YT4STV7Z0")
-
-model = genai.GenerativeModel('gemini-1.5-pro-latest')
-
+# genai.configure(api_key="AIzaSyA8PFDBQxqRVGhpAyYQs11dC9YT4STV7Z0")
+genai.configure(api_key="AIzaSyBZpVsAZpepbFKzLb-g5Ymxuxu3YozaBb8")
+# model = genai.GenerativeModel('gemini-1.5-pro-latest')
+model = genai.GenerativeModel('gemini-2.0-flash-lite')
 def summarize_reviews(reviews):
     # Initialize Gemini model
 
@@ -21,7 +21,6 @@ def summarize_reviews(reviews):
     response = model.generate_content(prompt)
 
     prompt = f"Give some sugessions to improve the quality of product based on the review:\n\n{reviews}"
-    print(model.generate_content(prompt).text)
 
     # Get the summarized text
     summary = response.text
