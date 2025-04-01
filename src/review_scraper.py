@@ -62,6 +62,10 @@ def fetch_reviews(link):
 
     print('\nPAGE FULLY LOADED!!\n')
     try:
+        product_name = driver.find_element(By.CSS_SELECTOR,".VU-ZEz").text
+    except NoSuchElementException:
+        print("\nProduct name not found!!\n")
+    try:
         all_review_button = driver.find_element(By.CSS_SELECTOR,"._23J90q.RcXBOT")
     except NoSuchElementException:
         try:
@@ -83,5 +87,4 @@ def fetch_reviews(link):
     reviews.extend(scrape_review(driver=driver,anchor_link=anchor_link))
     
     driver.quit()
-    print("REVIEW COUNT : ",len(reviews))
-    return reviews
+    return reviews,product_name

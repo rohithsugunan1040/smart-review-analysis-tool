@@ -129,6 +129,7 @@ def main():
 
     if "reviews" not in st.session_state:
         st.session_state.reviews = None
+        st.session_state.product_name = None
         st.session_state.cleaned_reviews = None
         st.session_state.sentiments = None
         st.session_state.summary = None
@@ -137,10 +138,11 @@ def main():
     if st.button("Analyze Reviews"):
         st.session_state.new_link = True
         with st.spinner("Fetching reviews..."):
-            reviews = fetch_reviews(product_link)
+            reviews,product_name = fetch_reviews(product_link)
             if reviews == 0:
                 return
             st.session_state.reviews = reviews
+            st.session_state.product_name = product_name
         
         with st.spinner("Cleaning reviews..."):
             st.session_state.cleaned_reviews = clean_reviews(st.session_state.reviews)
@@ -156,6 +158,7 @@ def main():
 
     # Display results only if reviews exist
     if st.session_state.reviews:
+        st.header(st.session_state.product_name)
         st.subheader("Sentiment Analysis Results")
         create_pie_chart(st.session_state.sentiments)
         st.text("")
