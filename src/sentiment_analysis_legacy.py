@@ -17,4 +17,6 @@ def analyze_sentiment(reviews):
             sentiments['negative'] += 1
         else:
             sentiments['neutral'] += 1
+    print("\n\nSENTIMENTSS")
+    print(sentiments)
     return sentiments

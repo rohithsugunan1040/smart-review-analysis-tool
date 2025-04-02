@@ -36,12 +36,13 @@ for path in nltk_data_paths:
 def create_pie_chart(sentiments):
     labels = sentiments.keys()
     sizes = sentiments.values()
+
     colors = ['green', 'grey', 'red']
     explode = (0.1, 0, 0)  
     
     fig1, ax1 = plt.subplots()
     wedges, texts, autotexts = ax1.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%',
-                                       shadow=True, startangle=90, textprops=dict(color="w"))
+                                       shadow=False, startangle=90, textprops=dict(color="w"))
     
     # Improve the appearance of the chart
     for text in texts:
@@ -54,6 +55,9 @@ def create_pie_chart(sentiments):
     plt.setp(autotexts, size=10, weight="bold")
     ax1.set_title('Sentiment Analysis Results', color='black', fontsize=14)
     
+    pie_data = {label.get_text(): float(autotext.get_text().strip('%')) for label, autotext in zip(texts, autotexts)}
+    st.session_state.pie_data = pie_data
+
     st.pyplot(fig1)
 
 st.cache_resource
@@ -63,7 +67,6 @@ def keyword_analysis(review):
         prompt = f"{review}\n\nBased on the above review give the most frequently mentioned keywords which are useful for analysis of product along with their sentiment possitivity precent eg: 55% possitive\nkeyword examples are 'Camera quality','Battery Life' etc not include common keywords like 'good','bad','nice' etc. Keyword should be meaningful.\n\nGive each keyword as 'KW:' followed by the extracted keyword and in next line 'possitivity:' followed by corresponding positivity percentage. without any formatting or decoration"
         response = model.generate_content(prompt)
         response =  response.text
-        print("RESPONSE\n\n",response)
         st.session_state.response = response
         st.session_state.new_link = False
 
@@ -76,7 +79,7 @@ def keyword_analysis(review):
     sentiments = {match[0]: int(match[1]) for match in matches}
 
     keywords = list(sentiments.keys())
-    print("KEYWORDS\n\n",keywords)
+    st.session_state.top_keywords = keywords
 
     # Display keywords as inline tags
     keyword_html = "".join([f"<span style='display: inline-block; background-color: #e8eaed; padding: 6px 12px; border-radius: 12px; margin: 4px; font-size: 14px;'>{keyword}</span>" for keyword in keywords])
