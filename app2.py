@@ -122,7 +122,6 @@ def main():
         st.session_state.sentiments = None
         st.session_state.summary = None
         st.session_state.top_keywords = None
-        st.session_state.product_name = "Unknown Product"
         st.session_state.pie_data = None
     
     if st.button("Analyze Reviews"):
@@ -144,8 +143,6 @@ def main():
         
         with st.spinner("Extracting Keywords..."):
             st.session_state.top_keywords = keyword_analysis(st.session_state.reviews)
-            print("TOP KEYWORDSSSSSS.... : ",st.session_state.top_keywords)
-            print(type(st.session_state.top_keywords))
         
         st.success("Analysis complete!")
     

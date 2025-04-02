@@ -12,115 +12,101 @@ from src.charts import create_pie_chart
 from src.charts import keyword_analysis
 from src.chat import get_response
 
-import re
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from io import BytesIO
+import matplotlib.pyplot as plt
 
 
-def chat_sidebar():
 
 
-    def boldify(text):
-        """Convert **text** to bold for Streamlit Markdown."""
-        return re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)
+def generate_sentiment_chart():
+    """Generate a pie chart of sentiment scores and return as BytesIO buffer."""
+    fig, ax = plt.subplots()
+    sentiments = st.session_state.sentiments
+    labels = sentiments.keys()
+    sizes = sentiments.values()
+    colors = ['#ff9999', '#66b3ff', '#99ff99']
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=90)
+    ax.axis('equal')
+    
+    img_buffer = BytesIO()
+    plt.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    plt.close()
+    return img_buffer
 
-    if 'user_input' not in st.session_state:
-        st.session_state.user_input = ""
-    def clear_text():
-        st.session_state.user_input = st.session_state.chat_input_sidebar
-        st.session_state.chat_input_sidebar = ""
 
-        if 'last_message' not in st.session_state:
-            st.session_state.last_message = ""
-
-        user_input = st.session_state.user_input
-        if user_input != st.session_state.last_message:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            st.session_state.last_message = user_input
-        
-        # Simulated bot response
-        bot_response = f"{get_response(user_input,st.session_state.cleaned_reviews)}"
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
-        st.session_state.enter_clicked = True
-
-    with st.sidebar:
-        st.header("💬 Chat")
-
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-
-        # Custom CSS for chat message alignment and visibility
-        st.markdown(
-            """
-            <style>
-                .user-message { 
-                    text-align: right; 
-                    background-color: #A7E1A7; /* Soft green */
-                    color: black;
-                    padding: 10px; 
-                    border-radius: 10px;
-                    display: inline-block;
-                    max-width: 80%;
-                    border: 1px solid #4CAF50;
-                }
-                .bot-message {
-                    text-align: left;
-                    background-color: #F1F1F1; /* Soft gray */
-                    color: black;
-                    padding: 10px; 
-                    border-radius: 10px;
-                    display: inline-block;
-                    max-width: 80%;
-                    border: 1px solid #888;
-                }
-                .message-container {
-                    display: flex;
-                    width: 100%;
-                    margin: 5px 0;
-                }
-                .user-container {
-                    justify-content: flex-end;
-                }
-                .bot-container {
-                    justify-content: flex-start;
-                }
-            </style>
-            """, 
-            unsafe_allow_html=True
-        )
-
-        # Display chat messages
-        for msg in st.session_state.messages:
-            if msg["role"] == "user":
-                st.markdown(f"""
-                <div class="message-container user-container">
-                    <div class="user-message">{msg["content"]}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class="message-container bot-container">
-                    <div class="bot-message">{boldify(msg["content"])}</div>
-                </div>
-                """, unsafe_allow_html=True)
-
-        # User input field
-        st.text_input("Type your message:", key="chat_input_sidebar",on_change=clear_text)
-        user_input = st.session_state.user_input
-        
-        st.session_state.button_clicked = False
-
-        if st.button("Send", key="chat_send_sidebar") and user_input:
-            if not st.session_state.enter_clicked:
-                st.session_state.messages.append({"role": "user", "content": user_input})
-               
-                # Simulated bot response
-                bot_response = f"{get_response(user_input,st.session_state.cleaned_reviews)}"
-                st.session_state.messages.append({"role": "assistant", "content": bot_response})
-
-            # Clear input field correctly
-            
-
-            st.rerun()
-
+def generate_pdf():
+    """Generate a PDF report with sentiment scores, keyword analysis, and summary."""
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
+    
+    # Title
+    elements.append(Paragraph("<b>Smart Review Analysis Report</b>", styles["Title"]))
+    elements.append(Spacer(1, 12))
+    
+    # Product Information
+    product_name = st.session_state.get("product_name", "N/A")
+    elements.append(Paragraph(f"<b>Product Name:</b> {product_name}", styles["Normal"]))
+    elements.append(Spacer(1, 12))
+    
+    # Sentiment Score Table
+    if st.session_state.sentiments:
+        data = [["Sentiment", "Percentage"]] + [[k, f"{v}%"] for k, v in st.session_state.pie_data.items()]
+        table = Table(data, colWidths=[150, 100])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 12))
+    
+    # Keyword Analysis
+    # if "top_keywords" in st.session_state and st.session_state.top_keywords:
+    #     elements.append(Paragraph("<b>Top Keywords:</b>", styles["Normal"]))
+    #     keyword_data = [[kw] for kw in st.session_state.top_keywords]
+    #     keyword_table = Table(keyword_data)
+    #     keyword_table.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    #     elements.append(keyword_table)
+    #     elements.append(Spacer(1, 12))
+    # else:
+    #     elements.append(Paragraph("<b>Top Keywords:</b> No keywords extracted.", styles["Normal"]))
+    #     elements.append(Spacer(1, 12))
+    elements.append(Paragraph("<b>Top Keywords:</b>", styles["Normal"]))
+    keyword_data = [[kw] for kw in st.session_state.top_keywords]
+    keyword_table = Table(keyword_data)
+    keyword_table.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    elements.append(keyword_table)
+    elements.append(Spacer(1, 12))
+    
+    # Review Summary
+    if "summary" in st.session_state:
+        elements.append(Paragraph("<b>Review Summary:</b>", styles["Normal"]))
+        elements.append(Paragraph(st.session_state.summary, styles["Normal"]))
+        elements.append(Spacer(1, 12))
+    
+    # Sentiment Chart
+    img_buffer = generate_sentiment_chart()
+    img = Image(img_buffer, width=300, height=200)
+    elements.append(img)
+    
+    # Conclusion
+    elements.append(Spacer(1, 12))
+    elements.append(Paragraph("<b>Conclusion:</b> The product has received mostly positive reviews with minor concerns.", styles["Normal"]))
+    
+    # Build the PDF
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
 
 def main():
     st.title("Smart Review Analysis Tool")
@@ -134,6 +120,8 @@ def main():
         st.session_state.sentiments = None
         st.session_state.summary = None
         st.session_state.show_chat = False  # To handle chat visibility
+        st.session_state.pie_data = None
+        st.session_state.top_keywords = None
 
     if st.button("Analyze Reviews"):
         st.session_state.new_link = True
@@ -173,9 +161,13 @@ def main():
         if "show_chat" not in st.session_state:
             st.session_state.show_chat = False
 
-        if st.session_state.show_chat:
-            chat_sidebar()
+        # if st.session_state.show_chat:
+        #     chat_sidebar()
 
+    if st.session_state.reviews:
+        if st.button("Download Report"):
+            pdf_data = generate_pdf()
+            st.download_button(label="Download PDF", data=pdf_data, file_name="review_report.pdf", mime="application/pdf")
 
 if __name__ == "__main__":
     main()

@@ -62,9 +62,10 @@ def fetch_reviews(link):
 
     print('\nPAGE FULLY LOADED!!\n')
     try:
-        product_name = driver.find_element(By.CSS_SELECTOR,".VU-ZEz").text
+        product_name = driver.find_element(By.CSS_SELECTOR,".VU-ZEz").text  
     except NoSuchElementException:
         print("\nProduct name not found!!\n")
+        product_name = "None"
     try:
         all_review_button = driver.find_element(By.CSS_SELECTOR,"._23J90q.RcXBOT")
     except NoSuchElementException:
@@ -72,7 +73,8 @@ def fetch_reviews(link):
             all_review_button = driver.find_element(By.CSS_SELECTOR,"._23J90q.iIbIvC")
         except NoSuchElementException:
             st.error("Review not found")
-            return 0
+            driver.quit()
+            return 0,0
     anchor = all_review_button.find_element(By.XPATH,'..')
     anchor_link = anchor.get_attribute("href")
 
