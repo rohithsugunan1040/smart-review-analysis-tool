@@ -18,6 +18,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from io import BytesIO
 import matplotlib.pyplot as plt
+import re
 
 
 
@@ -91,7 +92,8 @@ def generate_pdf():
     # Review Summary
     if "summary" in st.session_state:
         elements.append(Paragraph("<b>Review Summary:</b>", styles["Normal"]))
-        elements.append(Paragraph(st.session_state.summary, styles["Normal"]))
+        formatted_summary = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", st.session_state.summary)
+        elements.append(Paragraph(formatted_summary, styles["Normal"]))
         elements.append(Spacer(1, 12))
     
     # Sentiment Chart
