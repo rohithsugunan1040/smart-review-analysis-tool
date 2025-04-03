@@ -9,7 +9,7 @@ genai.configure(api_key="AIzaSyBZpVsAZpepbFKzLb-g5Ymxuxu3YozaBb8")
 model = genai.GenerativeModel('gemini-2.0-flash-lite')
 
 def get_response(query,review):
-    prompt = f"Based on this review answer the following question. Answer doesnot exceed more than 60 words\nThe review is \n{review} and the question is \n{query}"
+    prompt = f"Based on this review answer the following question. Answer doesnot exceed more than 60 words. If the question is a not related to the review like 'hi' 'how are you' etc then give reply mentioning that you can only give answer to question related to the review.\nThe review is \n{review} and the question is \n{query}"
     response = model.generate_content(prompt)
     answer =  response.text
     return answer

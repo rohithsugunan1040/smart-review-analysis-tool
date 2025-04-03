@@ -102,8 +102,8 @@ def generate_pdf():
     elements.append(img)
     
     # Conclusion
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph("<b>Conclusion:</b> The product has received mostly positive reviews with minor concerns.", styles["Normal"]))
+    # elements.append(Spacer(1, 12))
+    # elements.append(Paragraph("<b>Conclusion:</b> The product has received mostly positive reviews with minor concerns.", styles["Normal"]))
     
     # Build the PDF
     doc.build(elements)
@@ -127,6 +127,8 @@ def main():
 
     if st.button("Analyze Reviews"):
         st.session_state.new_link = True
+        if "messages" in st.session_state:
+            del st.session_state.messages
         with st.spinner("Fetching reviews..."):
             reviews,product_name = fetch_reviews(product_link)
             if reviews == 0:
@@ -162,9 +164,6 @@ def main():
 
         if "show_chat" not in st.session_state:
             st.session_state.show_chat = False
-
-        # if st.session_state.show_chat:
-        #     chat_sidebar()
 
     if st.session_state.reviews:
         if st.button("Download Report"):
