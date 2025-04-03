@@ -6,7 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException,InvalidArgumentException
 
 import sys
 import os
@@ -55,7 +55,13 @@ def scrape_review(driver,anchor_link):
 
 def fetch_reviews(link):
     driver = webdriver.Chrome(service=service)
-    driver.get(link)
+    try:
+        driver.get(link)
+    except InvalidArgumentException:
+        print("INVALID ARGUMENT")
+        st.error("Invalid URL")
+        driver.quit()
+        return 0,0
 
     while driver.execute_script("return document.readyState") != "complete":
         pass
